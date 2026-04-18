@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pisonet System</title>
+<style>
+/* GENERAL STYLES */
+body {
+    margin: 0; 
+    font-family: Arial, sans-serif; 
+    background: #0d0d0d; 
+    color: white;
+    scroll-behavior: smooth;
+}
+a { text-decoration: none; cursor: pointer; }
+
+/* NAVBAR */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background: #111;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    gap: 20px;
+}
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #00f2fe;
+    margin-right: 20px;
+}
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+.nav-links a {
+    color: #ccc;
+    font-weight: 500;
+    padding: 8px 12px; 
+    border-radius: 6px; 
+    transition: 0.3s;
+}
+.nav-links a:hover {
+    color: #00f2fe; 
+    background: rgba(0,242,254,0.1);
+}
+.login-btn {
+    padding: 10px 20px; 
+    border: 1px solid #00f2fe; 
+    color: #00f2fe; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    margin-left: 20px; 
+    transition: 0.3s;
+}
+.login-btn:hover { background: #00f2fe; 
+    color: black; }
+
+/* SECTIONS */
+.section { padding: 80px 20px; 
+    text-align: center; 
+    display: none; }
+.section.active { 
+    display: block; }
+
+/* HOME */
+.home {
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 20px; 
+    flex-wrap: wrap; 
+    margin-bottom: 50px;
+}
+.hero-text { max-width: 500px; text-align: left;}
+.hero-text h1 span { color: #00f2fe; }
+.pisonet-image img {
+    width: 600px; 
+    max-width: 100%; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0,242,254,0.2);
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+.card {
+    background: #1a1a1a;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #00f2fe;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,242,254,0.4);
+}
+
+.card h3 {
+    color: #00f2fe;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.5;
+}
+
+/* BUTTONS & INPUTS */
+.button-column, 
+.button-grid {
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    margin: 25px auto; 
+    max-width: 300px;
+}
+.button-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+    max-width: 800px; 
+    text-align: center;
+}
+.button-column a, .button-grid a {
+    padding: 15px; 
+    text-align: center; 
+    background: #1a1a1a; 
+    border: 1px solid #00f2fe; 
+    color: white; 
+    border-radius: 10px; 
+    transition: 0.3s;
+}
+.button-column a:hover, .button-grid a:hover { 
+    background: #00f2fe; 
+    color: black; 
+    transform: translateY(-3px); 
+}
+
+/* INPUT CENTERING */
+input[type="text"], input[type="password"], textarea {
+    width: 100%; 
+    max-width: 500px; 
+    padding: 15px; 
+    background: #1a1a1a; 
+    border: 1px solid #00f2fe; 
+    color: white; 
+    border-radius: 8px; 
+    font-size: 18px; 
+    outline: none; 
+    text-align: center; 
+    box-sizing: border-box;
+}
+#credentials input {
+    margin: 10px auto;
+    display: block;
+    max-width: 250px;
+}
+
+/* BACK BUTTON */
+.back-btn {
+    display:inline-block; 
+    margin-top:20px; 
+    padding:12px 25px; 
+    border:1px solid #00f2fe; 
+    color:#00f2fe; 
+    border-radius:8px;
+}
+
+/* LOGIN MODAL */
+#toggle-login { display:none; }
+.modal {
+    display:none; 
+    position:fixed; 
+    width:100%; 
+    height:100%; 
+    background: rgba(0,0,0,0.8); 
+    top:0; left:0; justify-content:center; 
+    align-items:center; 
+    z-index: 100;
+}
+#toggle-login:checked ~ .modal { display:flex; }
+.modal-box {
+    background:#111; 
+    padding:30px; 
+    border-radius:12px; 
+    text-align:center; 
+    width:320px;  
+    border: 1px solid #00f2fe;
+}
+.modal-box a {
+    display:block; 
+    margin:10px auto; 
+    padding:15px; 
+    background:#00f2fe; 
+    color:black; 
+    border-radius:8px; 
+    font-weight: bold; 
+    width: 80%;
+}
+
+/* TRACKER DISPLAY */
+.customer-card {
+    background: #1a1a1a; 
+    border: 1px solid #333; 
+    padding: 15px;  
+    border-radius: 10px; 
+    margin: 10px auto; 
+    max-width: 500px; 
+    text-align: left;
+}
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="toggle-login">
+
+<nav>
+    <div class="logo" id="navLogo">PISONET SALES LOGGER AND FREE-PLAY CREDIT TRACKER</div>
+    <div class="nav-links">
+        <a onclick="showSection('home')">Home</a>
+        <a onclick="showSection('settings')">Settings</a>
+        <a onclick="showSection('personalization')">Personalization</a>
+        <a onclick="showSection('about')">About</a>
+    </div>
+    <label for="toggle-login" class="login-btn">Login</label>
+</nav>
+
+<div class="modal">
+    <div class="modal-box">
+        <h2 style="color:#00f2fe;">LOGIN MENU</h2>
+        <div id="roleSelect">
+            <a onclick="openInputs('admin')">ADMIN</a>
+            <a onclick="openInputs('cashier')">CASHIER</a>
+            <label for="toggle-login" style="color:#666; cursor:pointer;">[ EXIT ]</label>
+        </div>
+        <div id="credentials" style="display:none;">
+            <input type="text" placeholder="Username">
+            <input type="password" placeholder="Password">
+            <a onclick="finishLogin()">LOG IN</a>
+            <p onclick="resetModal()" style="color:#666; cursor:pointer; margin-top:10px;">Back</p>
+        </div>
+    </div>
+</div>
+
+<div id="home" class="section active container">
+    <div class="home">
+        <div class="hero-text">
+            <h1>PISONET SALES LOGGER & <span>FREE-PLAY CREDIT TRACKER</span></h1>
+            <div class="button-column" style="margin-left: 0;">
+                <a onclick="showSection('salesLogger')">SALES LOGGER</a>
+                <a onclick="showSection('freeplayTracker')">FREE-PLAY TRACKER</a>
+                <a onclick="showSection('records')">VIEW RECORDS</a>
+            </div>
+        </div>
+        <div class="pisonet-image">
+            <img src="https://steemitimages.com/DQmY2EQWXozjEfs7FGQqkodmCuJKN7TgxaQ25fPCLK8Nprb/psionet.jpg">
+        </div>
+    </div>
+     <hr>
+      
+     <hr>                   
+
+    <div class="button-grid">
+    <div class="card">
+        <h3>💰 Sales Monitoring</h3>
+        <p>Track daily, monthly, and yearly sales performance.</p>
+    </div>
+
+    <div class="card">
+        <h3>🎮 Free-Play Tracking</h3>
+        <p>Manage and monitor customer free-play usage.</p>
+    </div>
+
+    <div class="card">
+        <h3>📊 Reports & Records</h3>
+        <p>View transaction history and customer records.</p>
+    </div>
+</div>
+    </div>
+</div>
+
+<div id="admin" class="section">
+    <h2>ADMIN MAIN MENU</h2>
+    <div class="button-grid">
+        <a onclick="showSection('salesLogger')">SALES LOGGER</a>
+        <a onclick="showSection('freeplayTracker')">FREE-PLAY TRACKER</a>
+        <a onclick="showSection('records')">VIEW RECORDS</a>
+        <a onclick="showSection('home')">LOGOUT</a>
+    </div>
+</div>
+
+<div id="cashier" class="section">
+    <h2>CASHIER MAIN MENU</h2>
+
+    <div class="button-grid">
+        <a onclick="showSection('salesLogger')">SALES LOGGER</a>
+        <a onclick="showSection('records')">VIEW RECORDS</a>
+        <a onclick="showSection('home')">LOGOUT</a>
+    </div>
+</div>
+
+
+
+<div id="salesLogger" class="section">
+    <h2>SALES LOGGER</h2>
+    <div id="step1">
+        <p>Enter Sales Amount:</p>
+        <input type="text" id="salesAmount" placeholder="Enter amount..." onkeypress="handleSalesAmount(event)">
+    </div>
+    <div id="step2" style="display:none;">
+        <p>Add sales amount? (Y/N)</p>
+        <input type="text" id="salesConfirm" maxlength="1" placeholder="Y or N" onkeypress="handleSalesConfirm(event)">
+    </div>
+    <a class="back-btn" onclick="resetSales(); showSection('admin');">Back</a>
+</div>
+
+<div id="freeplayTracker" class="section">
+    <h2>FREE-PLAY TRACKER</h2>
+    <div class="button-grid">
+        <a onclick="showSection('addCustomer')">ADD CUSTOMER</a>
+        <a onclick="showSection('trackCustomer')">TRACK CUSTOMER</a>
+        <a onclick="deleteRecords()">DELETE RECORDS</a>
+        <a onclick="showSection('admin')">BACK</a>
+    </div>
+</div>
+
+<div id="records" class="section">
+    <h2>VIEW SALES & FREE-PLAY CREDIT</h2>
+    <div id="allRecordsList" style="background:#1a1a1a; padding:20px; border-radius:10px; display:inline-block; min-width:300px; border: 1px solid #333;">
+        <p>No transactions recorded today.</p>
+    </div><br>
+    <a class="back-btn" onclick="showSection('admin')">Back</a>
+</div>
+
+<div id="addCustomer" class="section">
+    <h2>ADD CUSTOMER</h2>
+    <div id="nameInputPart">
+        <p>Enter Customer Name:</p>
+        <input type="text" id="custNameInput" placeholder="Type name..." onkeypress="handleCustName(event)">
+    </div>
+    <div id="idInputPart" style="display:none;">
+        <p>Enter ID for <span id="spanName" style="color:#00f2fe;"></span>:</p>
+        <input type="text" id="custIdInput" placeholder="e.g. 02-2526-001" onkeypress="handleCustId(event)">
+    </div>
+    <br>
+    <a class="back-btn" onclick="resetAddCust(); showSection('freeplayTracker')">Back</a>
+</div>
+
+<div id="trackCustomer" class="section">
+    <h2>TRACK CUSTOMER</h2>
+    <input type="text" id="searchBar" placeholder="Search Customer..." oninput="searchCustomer()"><br><br>
+    <div id="customerListDisplay"></div>
+    <a class="back-btn" onclick="showSection('freeplayTracker')">Back</a>
+</div>
+
+<div id="settings" class="section">
+    <h2>SYSTEM SETTINGS</h2>
+    <div style="max-width: 400px; margin: auto; text-align: left; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333;">
+        <p><b>Rate:</b> ₱15.00 / Hour</p>
+        <p><b>Currency:</b> Philippine Peso (PHP)</p>
+        <p><b>Admin Password:</b> [Protected]</p>
+        <p><b>Data Storage:</b> Local Session</p>
+    </div>
+    <a class="back-btn" onclick="showSection('home')">Back</a>
+</div>
+
+<div id="personalization" class="section">
+    <h2>PERSONALIZATION</h2>
+    <div style="max-width: 400px; margin: auto; text-align: left; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333;">
+        <p><b>Shop Name:</b> Pisonet System</p>
+        <p><b>Accent Color:</b> Cyan Blue (#00f2fe)</p>
+        <p><b>Display Mode:</b> Dark Theme</p>
+        <p><b>Font:</b> Sans-Serif (Arial)</p>
+    </div>
+    <a class="back-btn" onclick="showSection('home')">Back</a>
+</div>
+
+<div id="about" class="section">
+    <h2>ABOUT SYSTEM</h2>
+    <div style="max-width: 500px; margin: auto; line-height: 1.6;">
+        <p><b>Pisonet Sales & Credit Tracker</b></p>
+        <p>Version 1.0.0 (2026)</p>
+        <p>This system is designed for Pisonet business owners to easily log daily sales and monitor free-play credits for loyal customers. It provides a clean, dark-themed interface for efficient management.</p>
+    </div>
+    <a class="back-btn" onclick="showSection('home')">Back</a>
+</div>
+
+<script>
+let savedAmount = "";
+let tempCustName = "";
+let selectedRole = "";
+let customerData = [];
+
+function showSection(id) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id === 'trackCustomer') searchCustomer();
+}
+
+// LOGIN
+function openInputs(role) {
+    selectedRole = role;
+    document.getElementById('roleSelect').style.display = 'none';
+    document.getElementById('credentials').style.display = 'block';
+}
+function resetModal() {
+    document.getElementById('roleSelect').style.display = 'block';
+    document.getElementById('credentials').style.display = 'none';
+}
+function finishLogin() {
+    document.getElementById('toggle-login').checked = false;
+    showSection(selectedRole);
+    resetModal();
+}
+
+// ADD CUSTOMER FUNCTIONS
+function handleCustName(e) {
+    if (e.key === 'Enter' && e.target.value.trim() !== "") {
+        tempCustName = e.target.value;
+        document.getElementById('spanName').innerText = tempCustName;
+        document.getElementById('nameInputPart').style.display = 'none';
+        document.getElementById('idInputPart').style.display = 'block';
+        document.getElementById('custIdInput').focus();
+    }
+}
+
+function handleCustId(e) {
+    if (e.key === 'Enter' && e.target.value.trim() !== "") {
+        let id = e.target.value;
+        let time = new Date().toLocaleString();
+        customerData.push({ name: tempCustName, id: id, status: "CLAIMED", time: time });
+        alert("Saved: " + tempCustName);
+        resetAddCust();
+        showSection('trackCustomer');
+    }
+}
+
+function resetAddCust() {
+    tempCustName = "";
+    document.getElementById('custNameInput').value = "";
+    document.getElementById('custIdInput').value = "";
+    document.getElementById('nameInputPart').style.display = 'block';
+    document.getElementById('idInputPart').style.display = 'none';
+}
+
+// TRACK / SEARCH
+function searchCustomer() {
+    let query = document.getElementById('searchBar').value.toLowerCase();
+    let display = document.getElementById('customerListDisplay');
+    let recordsDisplay = document.getElementById('allRecordsList');
+    display.innerHTML = "";
+    recordsDisplay.innerHTML = "";
+    let filtered = customerData.filter(c => c.name.toLowerCase().includes(query) || c.id.toLowerCase().includes(query));
+    if (filtered.length === 0) {
+        display.innerHTML = "<p>No results found.</p>";
+        recordsDisplay.innerHTML = "<p>No transactions recorded today.</p>";
+    } else {
+        filtered.forEach(c => {
+            let html = `
+                <div class="customer-card">
+                    <b>Name:</b> ${c.name}<br>
+                    <b>ID:</b> ${c.id}<br>
+                    <b>Status:</b> <span style="color:#00f2fe;">${c.status}</span><br>
+                    <small><b>Added:</b> ${c.time}</small>
+                </div>`;
+            display.innerHTML += html;
+            recordsDisplay.innerHTML += html;
+        });
+    }
+}
+
+function deleteRecords() {
+    if(confirm("Delete all records?")) {
+        customerData = [];
+        searchCustomer();
+    }
+}
+
+// SALES LOGGER
+function handleSalesAmount(e) {
+    if (e.key === 'Enter' && e.target.value.trim() !== "") {
+        savedAmount = e.target.value;
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+        document.getElementById('salesConfirm').focus();
+    }
+}
+function handleSalesConfirm(e) {
+    if (e.key === 'Enter') {
+        let choice = e.target.value.toUpperCase();
+        if (choice === 'Y') { alert("Sales Added: ₱" + savedAmount); resetSales(); showSection('admin'); }
+        else if (choice === 'N') { resetSales(); }
+        else { alert("Please type Y or N"); e.target.value = ""; }
+    }
+}
+function resetSales() {
+    savedAmount = "";
+    document.getElementById('salesAmount').value = "";
+    document.getElementById('salesConfirm').value = "";
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('step2').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
